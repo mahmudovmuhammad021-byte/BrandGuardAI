@@ -1,4 +1,4 @@
-# Verix (formerly Brand Guard)
+# Verix 
 
 Verix is an intelligent web application designed to scan, detect, and verify original products using custom AI technology (YOLOv8). It features a robust Django backend and a modern, fully-automated React frontend.
 
