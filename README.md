@@ -4,7 +4,7 @@ Brand Guard is an intelligent web application designed to scan, detect, and veri
 
 ## 🚀 Features
 
-- **AI-Powered Scanning:** Utilizes YOLOv3-tiny models for fast and accurate brand detection in images.
+- **AI-Powered Scanning:** Utilizes YOLOv8 models for fast and accurate brand detection in images.
 - **Brand Management:** Comprehensive dashboard to manage, track, and monitor registered brands.
 - **Alerts & Reports:** Keep track of scan history and receive alerts for unrecognized or suspicious products.
 - **User Authentication:** Secure login, registration, and role-based access control.
@@ -19,7 +19,7 @@ Brand Guard is an intelligent web application designed to scan, detect, and veri
 ### Backend
 - **Framework:** Python, Django & Django REST Framework
 - **Database:** SQLite (default for development)
-- **AI Engine:** YOLOv3 (Computer Vision)
+- **AI Engine:** YOLOv8 (Computer Vision)
 
 ## ⚙️ Getting Started
 
