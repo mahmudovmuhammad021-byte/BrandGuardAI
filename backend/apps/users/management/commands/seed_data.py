@@ -26,17 +26,14 @@ class Command(BaseCommand):
         # ── Brands ─────────────────────────────────────────
         from apps.brands.models import Brand
         brands = [
-            {'name': 'Artel',        'emoji': '📺', 'category': 'electronics',   'protection_level': 'maximum',  'contact_email': 'protect@artel.uz'},
-            {'name': 'Cosmo',        'emoji': '💄', 'category': 'cosmetics',     'protection_level': 'enhanced', 'contact_email': 'legal@cosmo.uz'},
-            {'name': 'Milliy Yuk',   'emoji': '👟', 'category': 'clothing',      'protection_level': 'standard', 'contact_email': 'info@milliy.uz'},
-            {'name': 'Sarbon',       'emoji': '🍫', 'category': 'food_beverage', 'protection_level': 'standard', 'contact_email': 'info@sarbon.uz'},
-            {'name': 'Orzugul',      'emoji': '💊', 'category': 'pharma',        'protection_level': 'maximum',  'contact_email': 'legal@orzugul.uz'},
-            {'name': 'Zamin Fruits', 'emoji': '🍎', 'category': 'food_beverage', 'protection_level': 'standard', 'contact_email': 'info@zamin.uz'},
-            {'name': 'Bravo Market', 'emoji': '🛒', 'category': 'retail',        'protection_level': 'enhanced', 'contact_email': 'protect@bravo.uz'},
-            {'name': 'Hamkor Tex',   'emoji': '🔧', 'category': 'electronics',   'protection_level': 'standard', 'contact_email': 'legal@hamkor.uz'},
+            {'name': 'Gucci', 'emoji': '👜', 'category': 'clothing', 'protection_level': 'maximum',  'contact_email': 'legal@gucci.com'},
+            {'name': 'Nike',  'emoji': '👟', 'category': 'clothing', 'protection_level': 'maximum',  'contact_email': 'protect@nike.com'},
+            {'name': 'Polo',  'emoji': '👕', 'category': 'clothing', 'protection_level': 'enhanced', 'contact_email': 'info@polo.com'},
+            {'name': 'Puma',  'emoji': '🐾', 'category': 'clothing', 'protection_level': 'enhanced', 'contact_email': 'info@puma.com'},
         ]
+        Brand.objects.all().delete()
         for b in brands:
-            Brand.objects.get_or_create(name=b['name'], defaults=b)
+            Brand.objects.create(**b)
         self.stdout.write(self.style.SUCCESS(f'{len(brands)} brands seeded'))
 
         # ── Alerts ─────────────────────────────────────────
