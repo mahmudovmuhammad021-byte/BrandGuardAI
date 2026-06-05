@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { Upload, ScanLine, RefreshCw, AlertTriangle, CheckCircle, AlertCircle, Flag, Save } from 'lucide-react'
+import { Upload, ScanLine, RefreshCw, AlertTriangle, CheckCircle, AlertCircle, Flag, Save, Camera, Image as ImageIcon } from 'lucide-react'
 import api from '../api/client'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -28,6 +28,11 @@ export default function Scanner() {
   const [stepIdx,   setStepIdx]  = useState(0)
   const [progress,  setProgress] = useState(0)
   const [result,    setResult]   = useState(null)
+
+  // Camera state
+  const [activeTab, setActiveTab] = useState('upload') // 'upload' | 'camera'
+  const videoRef = useRef(null)
+  const [cameraActive, setCameraActive] = useState(false)
   
   const { t } = useTranslation()
 
@@ -53,8 +58,50 @@ export default function Scanner() {
     onDrop,
     accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
     maxFiles: 1,
-    noClick: !!file,
+    noClick: !!file || activeTab === 'camera',
   })
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream
+        setCameraActive(true)
+      }
+    } catch (err) {
+      toast.error('Could not access camera: ' + err.message)
+    }
+  }
+
+  const stopCamera = () => {
+    if (videoRef.current?.srcObject) {
+      videoRef.current.srcObject.getTracks().forEach(t => t.stop())
+      setCameraActive(false)
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab === 'camera' && !preview) {
+      startCamera()
+    } else {
+      stopCamera()
+    }
+    return stopCamera
+  }, [activeTab, preview])
+
+  const handleCapture = () => {
+    if (!videoRef.current) return
+    const canvas = document.createElement('canvas')
+    canvas.width = videoRef.current.videoWidth
+    canvas.height = videoRef.current.videoHeight
+    canvas.getContext('2d').drawImage(videoRef.current, 0, 0)
+    canvas.toBlob(blob => {
+      const f = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' })
+      setFile(f)
+      setPreview(URL.createObjectURL(f))
+      stopCamera()
+    }, 'image/jpeg', 0.9)
+  }
 
   const handleScan = async () => {
     if (!file) return
@@ -103,10 +150,10 @@ export default function Scanner() {
   const handleReset = () => {
     setFile(null)
     setPreview(null)
-    setResult(null)
     setScanning(false)
     setProgress(0)
     setStepIdx(0)
+    if (activeTab === 'camera') startCamera()
   }
 
   const handleReport = async () => {
@@ -123,18 +170,37 @@ export default function Scanner() {
 
       {/* Left — Upload Panel */}
       <div className="card p-8 flex flex-col gap-6">
-        <h2 className="text-base font-semibold text-txt-primary">{t('scanner.upload_title', 'Upload Product Image')}</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold text-txt-primary">{t('scanner.upload_title', 'Product Image')}</h2>
+        </div>
 
-        {/* Drop Zone */}
+        {/* Tabs */}
+        <div className="flex gap-2 p-1 bg-bg-surface rounded-xl">
+          <button 
+            onClick={() => { setActiveTab('upload'); setFile(null); setPreview(null); }} 
+            className={clsx('flex-1 py-2 text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-all', activeTab === 'upload' ? 'bg-bg-base shadow text-txt-primary' : 'text-txt-muted hover:text-txt-secondary')}
+          >
+            <ImageIcon size={16} /> {t('scanner.tab_upload', 'Upload File')}
+          </button>
+          <button 
+            onClick={() => { setActiveTab('camera'); setFile(null); setPreview(null); }} 
+            className={clsx('flex-1 py-2 text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-all', activeTab === 'camera' ? 'bg-bg-base shadow text-txt-primary' : 'text-txt-muted hover:text-txt-secondary')}
+          >
+            <Camera size={16} /> {t('scanner.tab_camera', 'Use Camera')}
+          </button>
+        </div>
+
+        {/* Media Area */}
         <div
-          {...getRootProps()}
+          {...(activeTab === 'upload' ? getRootProps() : {})}
           className={clsx(
-            'relative border-2 border-dashed rounded-xl min-h-[320px] flex flex-col items-center justify-center transition-all duration-200 overflow-hidden cursor-pointer',
+            'relative border-2 rounded-xl min-h-[320px] flex flex-col items-center justify-center transition-all duration-200 overflow-hidden',
+            activeTab === 'upload' && 'border-dashed cursor-pointer',
             isDragActive ? 'border-primary bg-primary/5 shadow-glow-primary' : 'border-bg-border hover:border-primary/50',
-            file && 'border-primary border-solid'
+            (file || activeTab === 'camera') && 'border-primary border-solid bg-black/5'
           )}
         >
-          <input {...getInputProps()} />
+          {activeTab === 'upload' && <input {...getInputProps()} />}
 
           {/* Scan line animation */}
           {scanning && (
@@ -143,6 +209,24 @@ export default function Scanner() {
 
           {preview ? (
             <img src={preview} alt="Preview" className="w-full h-full object-contain p-4 max-h-[320px]" />
+          ) : activeTab === 'camera' ? (
+            <div className="w-full h-full relative flex items-center justify-center bg-black/10">
+              <video 
+                ref={videoRef} 
+                autoPlay 
+                playsInline 
+                muted 
+                className="w-full h-full object-cover max-h-[320px]" 
+              />
+              {cameraActive && (
+                <button 
+                  onClick={handleCapture}
+                  className="absolute bottom-4 left-1/2 -translate-x-1/2 w-14 h-14 bg-white/20 hover:bg-white/40 backdrop-blur-md border-2 border-white rounded-full flex items-center justify-center transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] z-10"
+                >
+                  <div className="w-10 h-10 bg-white rounded-full" />
+                </button>
+              )}
+            </div>
           ) : (
             <div className="flex flex-col items-center gap-3 text-txt-muted p-8 text-center">
               <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-2">
@@ -156,7 +240,7 @@ export default function Scanner() {
           {/* Corner markers */}
           {['top-3 left-3 border-t border-l', 'top-3 right-3 border-t border-r',
             'bottom-3 left-3 border-b border-l', 'bottom-3 right-3 border-b border-r'].map((cls, i) => (
-            <div key={i} className={`absolute w-5 h-5 border-primary ${cls}`} />
+            <div key={i} className={`absolute w-5 h-5 border-primary pointer-events-none ${cls}`} />
           ))}
         </div>
 

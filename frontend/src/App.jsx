@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import useAuthStore from './store/authStore'
 import Layout from './components/layout/Layout'
+import Landing  from './pages/Landing'
 import Login    from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
@@ -15,7 +16,7 @@ function PrivateRoute({ children }) {
 
 function PublicRoute({ children }) {
   const token = useAuthStore(s => s.accessToken)
-  return !token ? children : <Navigate to="/" replace />
+  return !token ? children : <Navigate to="/app" replace />
 }
 
 export default function App() {
@@ -23,11 +24,12 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Public */}
+        <Route path="/"         element={<Landing />} />
         <Route path="/login"    element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
 
         {/* Protected */}
-        <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
+        <Route path="/app" element={<PrivateRoute><Layout /></PrivateRoute>}>
           <Route index          element={<Dashboard />} />
           <Route path="scanner" element={<Scanner />} />
           <Route path="brands"  element={<Brands />} />

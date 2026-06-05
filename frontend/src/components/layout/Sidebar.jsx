@@ -5,13 +5,13 @@ import { useTranslation } from 'react-i18next'
 import clsx from 'clsx'
 
 const NAV_ITEMS = [
-  { to: '/',         icon: LayoutDashboard, key: 'dashboard', label: 'Dashboard',     badge: 'Live', badgeType: 'primary' },
-  { to: '/scanner',  icon: ScanLine,        key: 'scanner',   label: 'AI Scanner' },
+  { to: '/app',         icon: LayoutDashboard, key: 'dashboard', label: 'Dashboard',     badge: 'Live', badgeType: 'primary' },
+  { to: '/app/scanner',  icon: ScanLine,        key: 'scanner',   label: 'AI Scanner' },
 ]
 
 const NAV_MANAGE = [
-  { to: '/brands',   icon: Shield,   key: 'brands',   label: 'Brand Database' },
-  { to: '/history',  icon: History,  key: 'history',  label: 'Scan History' },
+  { to: '/app/brands',   icon: Shield,   key: 'brands',   label: 'Brand Database' },
+  { to: '/app/history',  icon: History,  key: 'history',  label: 'Scan History' },
 ]
 
 export default function Sidebar() {
@@ -79,7 +79,7 @@ function NavGroup({ label, items }) {
         <NavLink
           key={item.to}
           to={item.to}
-          end={item.to === '/'}
+          end={item.to === '/app'}
           className={({ isActive }) =>
             clsx('nav-item', isActive && 'active')
           }
