@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BrandGuard AI — Counterfeit Detection Platform</title>
+  <meta name="description" content="BrandGuard AI protects your brand from counterfeit products using advanced AI-powered detection. Monitor, detect, and report fake products instantly." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 40 40" fill="none">
+          <path d="M20 4L36 12V28L20 36L4 28V12L20 4Z" stroke="url(#grad1)" stroke-width="2" fill="none"/>
+          <path d="M20 10L30 15V25L20 30L10 25V15L20 10Z" fill="url(#grad2)" opacity="0.3"/>
+          <circle cx="20" cy="20" r="4" fill="url(#grad1)"/>
+          <defs>
+            <linearGradient id="grad1" x1="4" y1="4" x2="36" y2="36">
+              <stop offset="0%" stop-color="#6366f1"/>
+              <stop offset="100%" stop-color="#06b6d4"/>
+            </linearGradient>
+            <linearGradient id="grad2" x1="10" y1="10" x2="30" y2="30">
+              <stop offset="0%" stop-color="#6366f1"/>
+              <stop offset="100%" stop-color="#06b6d4"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-brand">BrandGuard</span>
+        <span class="logo-ai">AI</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <span class="nav-label">Main</span>
+        <a href="#" class="nav-item active" data-page="dashboard" id="nav-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+          <span class="nav-badge">Live</span>
+        </a>
+        <a href="#" class="nav-item" data-page="scanner" id="nav-scanner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><circle cx="12" cy="12" r="3"/></svg>
+          AI Scanner
+        </a>
+        <a href="#" class="nav-item" data-page="alerts" id="nav-alerts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          Alerts
+          <span class="nav-badge danger" id="alert-count">3</span>
+        </a>
+        <a href="#" class="nav-item" data-page="reports" id="nav-reports">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Reports
+        </a>
+      </div>
+      <div class="nav-group">
+        <span class="nav-label">Management</span>
+        <a href="#" class="nav-item" data-page="brands" id="nav-brands">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          Brand Database
+        </a>
+        <a href="#" class="nav-item" data-page="history" id="nav-history">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Scan History
+        </a>
+        <a href="#" class="nav-item" data-page="settings" id="nav-settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 014.93 19.07M16.24 7.76A6 6 0 017.76 16.24"/></svg>
+          Settings
+        </a>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar">BG</div>
+        <div class="user-info">
+          <span class="user-name">Admin User</span>
+          <span class="user-role">Brand Manager</span>
+        </div>
+        <div class="status-dot"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content" id="main-content">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="page-title" id="page-title">
+          <h1>Dashboard</h1>
+          <span class="page-subtitle">Real-time counterfeit monitoring</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search products, brands..." id="global-search" />
+        </div>
+        <button class="icon-btn" id="notification-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="badge">3</span>
+        </button>
+        <div class="system-status">
+          <span class="pulse-dot"></span>
+          <span>System Online</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== DASHBOARD PAGE ==================== -->
+    <section class="page active" id="page-dashboard">
+      <!-- Stats Row -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon teal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="stat-body">
+            <span class="stat-label">Total Scans Today</span>
+            <span class="stat-value" id="stat-scans">1,247</span>
+            <span class="stat-change positive">↑ 18% vs yesterday</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="stat-body">
+            <span class="stat-label">Counterfeits Detected</span>
+            <span class="stat-value" id="stat-counterfeits">84</span>
+            <span class="stat-change negative">↑ 6 new today</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="stat-body">
+            <span class="stat-label">Verified Originals</span>
+            <span class="stat-value" id="stat-originals">1,163</span>
+            <span class="stat-change positive">93.3% accuracy</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="stat-body">
+            <span class="stat-label">Brands Protected</span>
+            <span class="stat-value" id="stat-brands">28</span>
+            <span class="stat-change positive">↑ 2 new this week</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="charts-grid">
+        <div class="chart-card large">
+          <div class="chart-header">
+            <div>
+              <h3>Detection Activity</h3>
+              <p>Last 7 days scan overview</p>
+            </div>
+            <div class="chart-tabs">
+              <button class="chart-tab active" data-period="7d">7D</button>
+              <button class="chart-tab" data-period="30d">30D</button>
+              <button class="chart-tab" data-period="90d">90D</button>
+            </div>
+          </div>
+          <div class="chart-area">
+            <canvas id="activityChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <h3>Threat Sources</h3>
+              <p>By platform origin</p>
+            </div>
+          </div>
+          <div class="chart-area donut-area">
+            <canvas id="sourceChart"></canvas>
+            <div class="donut-legend" id="donut-legend"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Feed + Top Brands -->
+      <div class="bottom-grid">
+        <div class="feed-card">
+          <div class="card-header">
+            <h3>🔴 Live Threat Feed</h3>
+            <span class="live-badge">LIVE</span>
+          </div>
+          <div class="feed-list" id="live-feed">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <div class="brands-card">
+          <div class="card-header">
+            <h3>Top Protected Brands</h3>
+            <a href="#" class="link-btn" data-page="brands">View all</a>
+          </div>
+          <div class="brands-list" id="brands-list">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SCANNER PAGE ==================== -->
+    <section class="page" id="page-scanner">
+      <div class="scanner-layout">
+        <div class="scanner-panel">
+          <div class="scanner-hero">
+            <div class="scan-zone" id="scan-zone">
+              <div class="scan-frame">
+                <div class="corner tl"></div>
+                <div class="corner tr"></div>
+                <div class="corner bl"></div>
+                <div class="corner br"></div>
+                <div class="scan-line" id="scan-line"></div>
+                <div class="scan-content" id="scan-content">
+                  <div class="drop-icon">
+                    <svg viewBox="0 0 64 64" fill="none">
+                      <path d="M32 8C18.7 8 8 18.7 8 32s10.7 24 24 24 24-10.7 24-24S45.3 8 32 8z" stroke="currentColor" stroke-width="2" opacity="0.3"/>
+                      <path d="M32 20v16M24 28l8-8 8 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M20 44h24" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+                    </svg>
+                  </div>
+                  <p class="drop-text">Drop product image here</p>
+                  <p class="drop-sub">or click to browse · PNG, JPG, WEBP</p>
+                  <label class="btn-upload" for="file-input">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Upload Image
+                  </label>
+                  <input type="file" id="file-input" accept="image/*" hidden />
+                </div>
+                <img id="scan-preview" class="scan-preview" alt="Scan preview" />
+              </div>
+            </div>
+
+            <div class="scan-controls">
+              <button class="btn-scan" id="btn-scan" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Analyze Product
+              </button>
+              <button class="btn-outline" id="btn-clear">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+                Reset
+              </button>
+            </div>
+
+            <div class="scan-options">
+              <label class="option-toggle">
+                <input type="checkbox" id="opt-deep" checked />
+                <span class="toggle-slider"></span>
+                Deep Analysis Mode
+              </label>
+              <label class="option-toggle">
+                <input type="checkbox" id="opt-qr" />
+                <span class="toggle-slider"></span>
+                QR Code Detection
+              </label>
+              <label class="option-toggle">
+                <input type="checkbox" id="opt-text" checked />
+                <span class="toggle-slider"></span>
+                Text/Font Analysis
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="results-panel" id="results-panel">
+          <div class="results-placeholder" id="results-placeholder">
+            <svg viewBox="0 0 80 80" fill="none">
+              <circle cx="40" cy="40" r="36" stroke="currentColor" stroke-width="1.5" opacity="0.2"/>
+              <path d="M25 40c0-8.3 6.7-15 15-15s15 6.7 15 15-6.7 15-15 15S25 48.3 25 40z" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+              <circle cx="40" cy="40" r="5" fill="currentColor" opacity="0.3"/>
+            </svg>
+            <p>Upload and analyze a product image to see AI results here</p>
+          </div>
+
+          <div class="analysis-result hidden" id="analysis-result">
+            <div class="result-header" id="result-header">
+              <!-- Verdict injected by JS -->
+            </div>
+
+            <div class="confidence-bar-section">
+              <div class="conf-label">
+                <span>Authenticity Score</span>
+                <span id="conf-pct">—</span>
+              </div>
+              <div class="conf-bar-track">
+                <div class="conf-bar-fill" id="conf-bar"></div>
+              </div>
+            </div>
+
+            <div class="analysis-points" id="analysis-points">
+              <!-- Points injected by JS -->
+            </div>
+
+            <div class="result-actions">
+              <button class="btn-report" id="btn-report">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Report Counterfeit
+              </button>
+              <button class="btn-save" id="btn-save">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Save to Report
+              </button>
+            </div>
+          </div>
+
+          <!-- Scanning Animation -->
+          <div class="scanning-overlay hidden" id="scanning-overlay">
+            <div class="scanning-spinner">
+              <div class="spinner-ring"></div>
+              <div class="spinner-ring ring2"></div>
+              <div class="spinner-ring ring3"></div>
+              <div class="spinner-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+            </div>
+            <p class="scanning-text" id="scanning-text">Initializing AI engine...</p>
+            <div class="scan-progress">
+              <div class="scan-progress-fill" id="scan-progress-fill"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== ALERTS PAGE ==================== -->
+    <section class="page" id="page-alerts">
+      <div class="alerts-toolbar">
+        <div class="filter-group">
+          <button class="filter-btn active" data-filter="all">All Alerts</button>
+          <button class="filter-btn" data-filter="critical">Critical</button>
+          <button class="filter-btn" data-filter="warning">Warning</button>
+          <button class="filter-btn" data-filter="info">Info</button>
+        </div>
+        <button class="btn-outline small" id="mark-all-read">Mark all read</button>
+      </div>
+      <div class="alerts-list" id="alerts-list">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- ==================== REPORTS PAGE ==================== -->
+    <section class="page" id="page-reports">
+      <div class="reports-header">
+        <div class="report-summary-cards">
+          <div class="report-sum-card">
+            <span class="rscard-label">Monthly Scans</span>
+            <span class="rscard-value">12,847</span>
+            <div class="rscard-bar"><div style="width:73%"></div></div>
+          </div>
+          <div class="report-sum-card">
+            <span class="rscard-label">Counterfeits Found</span>
+            <span class="rscard-value red">634</span>
+            <div class="rscard-bar red"><div style="width:49%"></div></div>
+          </div>
+          <div class="report-sum-card">
+            <span class="rscard-label">Brands Protected</span>
+            <span class="rscard-value teal">28</span>
+            <div class="rscard-bar teal"><div style="width:28%"></div></div>
+          </div>
+          <div class="report-sum-card">
+            <span class="rscard-label">Cases Reported</span>
+            <span class="rscard-value purple">189</span>
+            <div class="rscard-bar purple"><div style="width:59%"></div></div>
+          </div>
+        </div>
+        <button class="btn-export" id="btn-export">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export PDF Report
+        </button>
+      </div>
+      <div class="reports-table-card">
+        <div class="table-header">
+          <h3>Recent Detection Cases</h3>
+          <div class="table-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search cases..." id="case-search" />
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="cases-table">
+            <thead>
+              <tr>
+                <th>Case ID</th>
+                <th>Product</th>
+                <th>Brand</th>
+                <th>Confidence</th>
+                <th>Source</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="cases-tbody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== BRANDS PAGE ==================== -->
+    <section class="page" id="page-brands">
+      <div class="brands-toolbar">
+        <div class="brands-search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search brands..." id="brand-search" />
+        </div>
+        <button class="btn-primary" id="btn-add-brand">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Brand
+        </button>
+      </div>
+      <div class="brands-grid" id="brands-grid">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- ==================== HISTORY PAGE ==================== -->
+    <section class="page" id="page-history">
+      <div class="history-filters">
+        <select class="select-filter" id="hist-brand-filter">
+          <option value="">All Brands</option>
+        </select>
+        <select class="select-filter" id="hist-verdict-filter">
+          <option value="">All Results</option>
+          <option value="original">Original</option>
+          <option value="counterfeit">Counterfeit</option>
+          <option value="suspicious">Suspicious</option>
+        </select>
+        <input type="date" class="select-filter" id="hist-date-filter" />
+        <button class="btn-outline small" id="hist-clear-filters">Clear</button>
+      </div>
+      <div class="history-list" id="history-list">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- ==================== SETTINGS PAGE ==================== -->
+    <section class="page" id="page-settings">
+      <div class="settings-layout">
+        <div class="settings-sidebar">
+          <button class="settings-tab active" data-tab="general">General</button>
+          <button class="settings-tab" data-tab="ai">AI Model</button>
+          <button class="settings-tab" data-tab="alerts">Alerts</button>
+          <button class="settings-tab" data-tab="integrations">Integrations</button>
+        </div>
+        <div class="settings-content">
+          <div class="settings-pane active" id="stab-general">
+            <h3>General Settings</h3>
+            <div class="setting-group">
+              <label>Platform Name</label>
+              <input type="text" class="setting-input" value="BrandGuard AI" />
+            </div>
+            <div class="setting-group">
+              <label>Default Language</label>
+              <select class="setting-input">
+                <option>English</option>
+                <option>Uzbek</option>
+                <option>Russian</option>
+              </select>
+            </div>
+            <div class="setting-group">
+              <label>Theme</label>
+              <div class="theme-options">
+                <button class="theme-btn active">🌙 Dark</button>
+                <button class="theme-btn">☀️ Light</button>
+              </div>
+            </div>
+            <div class="setting-group">
+              <label>Auto-alert on detection</label>
+              <label class="option-toggle">
+                <input type="checkbox" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <button class="btn-primary save-btn">Save Changes</button>
+          </div>
+
+          <div class="settings-pane" id="stab-ai">
+            <h3>AI Model Configuration</h3>
+            <div class="setting-group">
+              <label>Detection Model</label>
+              <select class="setting-input">
+                <option>YOLOv8-nano (Fast)</option>
+                <option selected>YOLOv8-medium (Balanced)</option>
+                <option>YOLOv8-large (Accurate)</option>
+                <option>Custom Model</option>
+              </select>
+            </div>
+            <div class="setting-group">
+              <label>Confidence Threshold</label>
+              <div class="slider-group">
+                <input type="range" min="50" max="99" value="75" class="range-slider" id="confidence-threshold" />
+                <span class="slider-val" id="conf-thresh-val">75%</span>
+              </div>
+            </div>
+            <div class="setting-group">
+              <label>Analysis Points</label>
+              <div class="checkbox-group">
+                <label><input type="checkbox" checked /> Logo Shape Analysis</label>
+                <label><input type="checkbox" checked /> Color Profile Matching</label>
+                <label><input type="checkbox" checked /> Font & Text Detection</label>
+                <label><input type="checkbox" checked /> Barcode/QR Verification</label>
+                <label><input type="checkbox" /> Hologram Detection</label>
+                <label><input type="checkbox" /> Packaging Texture</label>
+              </div>
+            </div>
+            <button class="btn-primary save-btn">Apply Model Settings</button>
+          </div>
+
+          <div class="settings-pane" id="stab-alerts">
+            <h3>Alert Configuration</h3>
+            <div class="setting-group">
+              <label>Telegram Bot Token</label>
+              <input type="password" class="setting-input" placeholder="••••••••••••••••••••" />
+            </div>
+            <div class="setting-group">
+              <label>Alert Chat ID</label>
+              <input type="text" class="setting-input" placeholder="-100xxxxxxxxxx" />
+            </div>
+            <div class="setting-group">
+              <label>Email Notifications</label>
+              <input type="email" class="setting-input" placeholder="admin@yourbrand.uz" />
+            </div>
+            <div class="setting-group">
+              <label>Alert Frequency</label>
+              <select class="setting-input">
+                <option>Immediately</option>
+                <option>Every hour</option>
+                <option>Daily digest</option>
+              </select>
+            </div>
+            <button class="btn-primary save-btn">Save Alert Settings</button>
+          </div>
+
+          <div class="settings-pane" id="stab-integrations">
+            <h3>Integrations</h3>
+            <div class="integration-cards">
+              <div class="int-card connected">
+                <div class="int-icon">🤖</div>
+                <div class="int-info">
+                  <span>Google Vision AI</span>
+                  <small>Connected — Image analysis</small>
+                </div>
+                <span class="int-status">✓ Active</span>
+              </div>
+              <div class="int-card">
+                <div class="int-icon">📱</div>
+                <div class="int-info">
+                  <span>Telegram Bot</span>
+                  <small>Real-time alert notifications</small>
+                </div>
+                <button class="int-connect">Connect</button>
+              </div>
+              <div class="int-card connected">
+                <div class="int-icon">🗄</div>
+                <div class="int-info">
+                  <span>PostgreSQL Database</span>
+                  <small>Connected — Local storage</small>
+                </div>
+                <span class="int-status">✓ Active</span>
+              </div>
+              <div class="int-card">
+                <div class="int-icon">☁️</div>
+                <div class="int-info">
+                  <span>Google Cloud Run</span>
+                  <small>ML model hosting</small>
+                </div>
+                <button class="int-connect">Connect</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Notification Panel -->
+  <div class="notif-panel hidden" id="notif-panel">
+    <div class="notif-header">
+      <h4>Notifications</h4>
+      <button id="close-notif">✕</button>
+    </div>
+    <div class="notif-list" id="notif-list"></div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Add Brand Modal -->
+  <div class="modal-overlay hidden" id="modal-overlay">
+    <div class="modal" id="modal-brand">
+      <div class="modal-header">
+        <h3>Add New Brand</h3>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Brand Name</label>
+          <input type="text" class="setting-input" id="new-brand-name" placeholder="e.g., Artel Electronics" />
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select class="setting-input" id="new-brand-cat">
+            <option>Electronics</option>
+            <option>Clothing</option>
+            <option>Food & Beverage</option>
+            <option>Cosmetics</option>
+            <option>Accessories</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Protection Level</label>
+          <select class="setting-input" id="new-brand-level">
+            <option>Standard</option>
+            <option>Enhanced</option>
+            <option>Maximum</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Contact Email</label>
+          <input type="email" class="setting-input" id="new-brand-email" placeholder="brand@company.uz" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-outline" id="modal-cancel">Cancel</button>
+        <button class="btn-primary" id="modal-save">Add Brand</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/scanner.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
