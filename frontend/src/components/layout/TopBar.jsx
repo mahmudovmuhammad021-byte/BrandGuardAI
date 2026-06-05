@@ -15,7 +15,7 @@ const PAGE_INFO = {
 export default function TopBar() {
   const { pathname } = useLocation()
   const { t, i18n } = useTranslation()
-  const info = PAGE_INFO[pathname] || { key: 'main', title: 'BrandGuard AI', sub: '' }
+  const info = PAGE_INFO[pathname] || { key: 'main', title: 'Verix', sub: '' }
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'uz' ? 'en' : 'uz')

@@ -53,7 +53,7 @@ export default function Settings() {
           <div className="space-y-5">
             <h3 className="text-base font-bold border-b border-bg-border pb-4">General Settings</h3>
             <SettingRow label="Platform Name">
-              <input defaultValue="BrandGuard AI" className="input-field max-w-xs" />
+              <input defaultValue="Verix" className="input-field max-w-xs" />
             </SettingRow>
             <SettingRow label="Logged in as">
               <div className="flex items-center gap-2 text-sm text-txt-secondary">

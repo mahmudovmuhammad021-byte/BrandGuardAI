@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { Upload, ScanLine, RefreshCw, AlertTriangle, CheckCircle, AlertCircle, Flag, Save, Camera, Image as ImageIcon } from 'lucide-react'
+import { Upload, ScanLine, RefreshCw, AlertTriangle, CheckCircle, AlertCircle, Flag, Save, Camera, Image as ImageIcon, Plus, X } from 'lucide-react'
+import Webcam from 'react-webcam'
 import api from '../api/client'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -8,32 +9,96 @@ import clsx from 'clsx'
 
 const SCAN_STEPS = [
   'Initializing YOLOv8 engine...',
-  'Preprocessing image...',
-  'Extracting logo features...',
-  'Analyzing color profile...',
-  'Checking font signatures...',
+  'Preprocessing images...',
+  'Extracting features...',
+  'Analyzing details...',
+  'Comparing document/tags...',
   'Scanning barcode / QR...',
   'Comparing brand database...',
   'Calculating confidence score...',
   'Generating report...',
 ]
 
+function ImageUploadBox({ title, type, file, preview, onDrop, onClear, onOpenCamera, heightClass = "h-56" }) {
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: (accepted) => onDrop(type, accepted),
+    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
+    maxFiles: 1,
+  })
+
+  return (
+    <div className="flex flex-col gap-2.5">
+      <label className="text-sm font-bold text-txt-secondary flex items-center gap-2">
+        <ImageIcon size={16} className="text-primary/70" />
+        {title}
+      </label>
+      <div
+        {...getRootProps()}
+        className={clsx(
+          `relative border-2 rounded-2xl ${heightClass} flex flex-col items-center justify-center transition-all duration-300 overflow-hidden cursor-pointer group`,
+          isDragActive 
+            ? 'border-primary bg-primary/10 shadow-[0_0_30px_rgba(99,102,241,0.2)] scale-[1.02]' 
+            : 'border-dashed border-bg-border bg-bg-surface hover:border-primary/50 hover:bg-bg-surface/80',
+          file && 'border-solid border-primary/50 bg-black/20'
+        )}
+      >
+        <input {...getInputProps()} />
+        {preview ? (
+          <>
+            <img src={preview} alt="Preview" className="w-full h-full object-contain p-3 transition-transform duration-300 group-hover:scale-105" />
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <button 
+                onClick={(e) => { e.stopPropagation(); onClear(type); }}
+                className="bg-danger/90 hover:bg-danger text-white rounded-full px-4 py-2 text-sm font-semibold flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg"
+                >
+                <RefreshCw size={14} /> Boshqa rasm tanlash
+                </button>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col items-center text-txt-muted gap-3 transform transition-transform duration-300 group-hover:-translate-y-1">
+            <div className={clsx(
+                "w-16 h-16 rounded-full flex items-center justify-center transition-colors duration-300",
+                isDragActive ? "bg-primary/20 text-primary" : "bg-bg-base text-txt-muted group-hover:bg-primary/10 group-hover:text-primary"
+            )}>
+                <Upload size={28} className={isDragActive ? "animate-bounce" : ""} />
+            </div>
+            <div className="text-center px-4">
+                <p className="text-sm font-medium text-txt-primary mb-1">
+                    Rasmni shu yerga tashlang yoki <span className="text-primary">kompyuterdan tanlang</span>
+                </p>
+                <p className="text-xs text-txt-muted mb-4">PNG, JPG, WEBP (Maks: 10MB)</p>
+                
+                {onOpenCamera && (
+                  <button 
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); onOpenCamera(); }}
+                    className="flex items-center mx-auto justify-center gap-2 px-5 py-2.5 bg-bg-base border border-bg-border rounded-xl text-txt-secondary hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-colors text-sm font-semibold z-10 relative shadow-sm"
+                  >
+                    <Camera size={16} /> Kamera orqali rasmga olish
+                  </button>
+                )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function Scanner() {
-  const [file,      setFile]     = useState(null)
-  const [preview,   setPreview]  = useState(null)
+  const [files, setFiles] = useState({ main: null })
+  const [previews, setPreviews] = useState({ main: null })
   const [brands,    setBrands]   = useState([])
-  const [brandId,   setBrandId]  = useState('')
   const [source,    setSource]   = useState('Manual')
   const [scanning,  setScanning] = useState(false)
   const [stepIdx,   setStepIdx]  = useState(0)
   const [progress,  setProgress] = useState(0)
   const [result,    setResult]   = useState(null)
-
-  // Camera state
-  const [activeTab, setActiveTab] = useState('upload') // 'upload' | 'camera'
-  const videoRef = useRef(null)
-  const [cameraActive, setCameraActive] = useState(false)
   
+  const [isCameraOpen, setIsCameraOpen] = useState(false)
+  const webcamRef = useRef(null)
+
   const { t } = useTranslation()
 
   const VERDICT_CONFIG = {
@@ -46,65 +111,35 @@ export default function Scanner() {
     api.get('/brands/?page_size=100').then(r => setBrands(r.data.results || r.data))
   }, [])
 
-  const onDrop = useCallback((accepted) => {
+  const handleDrop = useCallback((type, accepted) => {
     const f = accepted[0]
     if (!f) return
-    setFile(f)
-    setPreview(URL.createObjectURL(f))
+    setFiles(prev => ({ ...prev, [type]: f }))
+    setPreviews(prev => ({ ...prev, [type]: URL.createObjectURL(f) }))
     setResult(null)
   }, [])
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
-    maxFiles: 1,
-    noClick: !!file || activeTab === 'camera',
-  })
-
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        setCameraActive(true)
-      }
-    } catch (err) {
-      toast.error('Could not access camera: ' + err.message)
-    }
+  const handleClear = (type) => {
+    setFiles(prev => ({ ...prev, [type]: null }))
+    setPreviews(prev => ({ ...prev, [type]: null }))
   }
 
-  const stopCamera = () => {
-    if (videoRef.current?.srcObject) {
-      videoRef.current.srcObject.getTracks().forEach(t => t.stop())
-      setCameraActive(false)
+  const handleCapture = useCallback(() => {
+    const imageSrc = webcamRef.current.getScreenshot()
+    if (imageSrc) {
+      fetch(imageSrc).then(res => res.blob()).then(blob => {
+        const file = new File([blob], "camera_capture.jpg", { type: "image/jpeg" })
+        handleDrop('main', [file])
+        setIsCameraOpen(false)
+      })
     }
-  }
-
-  useEffect(() => {
-    if (activeTab === 'camera' && !preview) {
-      startCamera()
-    } else {
-      stopCamera()
-    }
-    return stopCamera
-  }, [activeTab, preview])
-
-  const handleCapture = () => {
-    if (!videoRef.current) return
-    const canvas = document.createElement('canvas')
-    canvas.width = videoRef.current.videoWidth
-    canvas.height = videoRef.current.videoHeight
-    canvas.getContext('2d').drawImage(videoRef.current, 0, 0)
-    canvas.toBlob(blob => {
-      const f = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' })
-      setFile(f)
-      setPreview(URL.createObjectURL(f))
-      stopCamera()
-    }, 'image/jpeg', 0.9)
-  }
+  }, [handleDrop])
 
   const handleScan = async () => {
-    if (!file) return
+    if (!files.main) {
+      toast.error("Asosiy rasmni kiritish majburiy!");
+      return;
+    }
     setScanning(true)
     setStepIdx(0)
     setProgress(0)
@@ -121,8 +156,7 @@ export default function Scanner() {
 
     try {
       const fd = new FormData()
-      fd.append('image', file)
-      if (brandId) fd.append('brand', brandId)
+      fd.append('image', files.main)
       fd.append('source', source)
 
       const { data } = await api.post('/scans/', fd, {
@@ -148,12 +182,12 @@ export default function Scanner() {
   }
 
   const handleReset = () => {
-    setFile(null)
-    setPreview(null)
+    setFiles({ main: null })
+    setPreviews({ main: null })
     setScanning(false)
     setProgress(0)
     setStepIdx(0)
-    if (activeTab === 'camera') startCamera()
+    setResult(null)
   }
 
   const handleReport = async () => {
@@ -171,90 +205,33 @@ export default function Scanner() {
       {/* Left — Upload Panel */}
       <div className="card p-8 flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-txt-primary">{t('scanner.upload_title', 'Product Image')}</h2>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex gap-2 p-1 bg-bg-surface rounded-xl">
-          <button 
-            onClick={() => { setActiveTab('upload'); setFile(null); setPreview(null); }} 
-            className={clsx('flex-1 py-2 text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-all', activeTab === 'upload' ? 'bg-bg-base shadow text-txt-primary' : 'text-txt-muted hover:text-txt-secondary')}
-          >
-            <ImageIcon size={16} /> {t('scanner.tab_upload', 'Upload File')}
-          </button>
-          <button 
-            onClick={() => { setActiveTab('camera'); setFile(null); setPreview(null); }} 
-            className={clsx('flex-1 py-2 text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-all', activeTab === 'camera' ? 'bg-bg-base shadow text-txt-primary' : 'text-txt-muted hover:text-txt-secondary')}
-          >
-            <Camera size={16} /> {t('scanner.tab_camera', 'Use Camera')}
-          </button>
+          <div>
+            <h2 className="text-lg font-bold text-txt-primary flex items-center gap-2">
+                <Camera size={20} className="text-primary" />
+                Mahsulotni Skanerlash
+            </h2>
+            <p className="text-sm text-txt-muted mt-1">Tekshirmoqchi bo'lgan mahsulotingizning aniq rasmini yuklang</p>
+          </div>
         </div>
 
         {/* Media Area */}
-        <div
-          {...(activeTab === 'upload' ? getRootProps() : {})}
-          className={clsx(
-            'relative border-2 rounded-xl min-h-[320px] flex flex-col items-center justify-center transition-all duration-200 overflow-hidden',
-            activeTab === 'upload' && 'border-dashed cursor-pointer',
-            isDragActive ? 'border-primary bg-primary/5 shadow-glow-primary' : 'border-bg-border hover:border-primary/50',
-            (file || activeTab === 'camera') && 'border-primary border-solid bg-black/5'
-          )}
-        >
-          {activeTab === 'upload' && <input {...getInputProps()} />}
-
-          {/* Scan line animation */}
-          {scanning && (
-            <div className="absolute inset-x-4 h-0.5 bg-gradient-to-r from-transparent via-teal to-transparent shadow-[0_0_8px_#06b6d4] animate-scan-move z-10" />
-          )}
-
-          {preview ? (
-            <img src={preview} alt="Preview" className="w-full h-full object-contain p-4 max-h-[320px]" />
-          ) : activeTab === 'camera' ? (
-            <div className="w-full h-full relative flex items-center justify-center bg-black/10">
-              <video 
-                ref={videoRef} 
-                autoPlay 
-                playsInline 
-                muted 
-                className="w-full h-full object-cover max-h-[320px]" 
-              />
-              {cameraActive && (
-                <button 
-                  onClick={handleCapture}
-                  className="absolute bottom-4 left-1/2 -translate-x-1/2 w-14 h-14 bg-white/20 hover:bg-white/40 backdrop-blur-md border-2 border-white rounded-full flex items-center justify-center transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] z-10"
-                >
-                  <div className="w-10 h-10 bg-white rounded-full" />
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center gap-3 text-txt-muted p-8 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-2">
-                <Upload size={28} className="text-primary" />
-              </div>
-              <p className="text-[16px] font-semibold text-txt-secondary">{t('scanner.drag_drop', 'Drop product image here')}</p>
-              <p className="text-sm">{t('scanner.browse', 'or click to browse')} · PNG, JPG, WEBP</p>
-            </div>
-          )}
-
-          {/* Corner markers */}
-          {['top-3 left-3 border-t border-l', 'top-3 right-3 border-t border-r',
-            'bottom-3 left-3 border-b border-l', 'bottom-3 right-3 border-b border-r'].map((cls, i) => (
-            <div key={i} className={`absolute w-5 h-5 border-primary pointer-events-none ${cls}`} />
-          ))}
+        <div className="grid grid-cols-1 gap-4 mt-2">
+          <ImageUploadBox 
+            title="Mahsulot Asosiy Rasmi *" 
+            type="main" 
+            file={files.main} 
+            preview={previews.main} 
+            onDrop={handleDrop} 
+            onClear={handleClear}
+            onOpenCamera={() => setIsCameraOpen(true)}
+            heightClass="h-64"
+          />
         </div>
 
         {/* Options */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 mt-2">
           <div>
-            <label className="block text-xs font-semibold text-txt-secondary mb-1.5">{t('scanner.brand', 'Brand')}</label>
-            <select value={brandId} onChange={e => setBrandId(e.target.value)} className="input-field">
-              <option value="">Select brand...</option>
-              {brands.map(b => <option key={b.id} value={b.id}>{b.emoji} {b.name}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-txt-secondary mb-1.5">{t('scanner.source', 'Source')}</label>
+            <label className="block text-xs font-semibold text-txt-secondary mb-1.5">{t('scanner.source', 'Manba')}</label>
             <select value={source} onChange={e => setSource(e.target.value)} className="input-field">
               {['Manual', 'Olx.uz', 'Telegram', 'Instagram', 'Uzum.uz', 'Other'].map(s =>
                 <option key={s}>{s}</option>
@@ -267,10 +244,10 @@ export default function Scanner() {
         <div className="flex gap-3">
           <button
             onClick={handleScan}
-            disabled={!file || scanning}
+            disabled={!files.main || scanning}
             className={clsx(
               'flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-[15px] text-white transition-all duration-200',
-              !file || scanning
+              !files.main || scanning
                 ? 'bg-bg-border text-txt-muted cursor-not-allowed'
                 : 'gradient-bg shadow-[0_4px_16px_rgba(99,102,241,0.3)] hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(99,102,241,0.4)]'
             )}
@@ -321,7 +298,8 @@ export default function Scanner() {
               <ScanLine size={32} className="opacity-30" />
             </div>
             <div>
-              <p className="font-semibold text-txt-secondary">{t('scanner.subtitle', 'Upload product image to analyze')}</p>
+              <p className="font-semibold text-txt-secondary">AI Skanerlash</p>
+              <p className="text-sm mt-1">Kamida asosiy rasmni yuklang.</p>
             </div>
           </div>
         )}
@@ -354,12 +332,12 @@ export default function Scanner() {
               </div>
 
               {/* Analysis Points */}
-              <div className="space-y-2">
+              <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
                 {result.analysis_points?.map((pt, i) => (
                   <div key={i} className="flex items-center gap-3 p-2.5 bg-bg-surface rounded-lg text-sm animate-fade-in" style={{ animationDelay: `${i * 0.06}s` }}>
                     <span className="text-base">{pt.icon}</span>
                     <span className="flex-1 text-txt-secondary">{t(`ai_points.${pt.label}`, pt.label)}</span>
-                    <span className="text-txt-primary font-medium text-xs">
+                    <span className="text-txt-primary font-medium text-[11px] truncate max-w-[120px]" title={pt.value}>
                       {pt.value.startsWith('Detected: ') 
                         ? (t('ai_points.Detected', 'Detected: ') + pt.value.substring(10))
                         : t(`ai_points.${pt.value}`, pt.value)}
@@ -370,7 +348,7 @@ export default function Scanner() {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-2 pt-1">
+              <div className="flex gap-2 pt-1 mt-auto">
                 {result.verdict !== 'original' && (
                   <button onClick={handleReport} className="flex-1 btn-danger py-2.5 justify-center text-sm">
                     <Flag size={14} /> {t('scanner.result.report', 'Report')}
@@ -387,6 +365,34 @@ export default function Scanner() {
           )
         })()}
       </div>
+      {/* Camera Modal */}
+      {isCameraOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center p-4">
+          <div className="relative w-full max-w-2xl bg-bg-base rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-bg-border animate-fade-in">
+            <div className="p-4 border-b border-bg-border flex justify-between items-center bg-bg-surface">
+              <h3 className="text-lg font-bold text-txt-primary flex items-center gap-2"><Camera size={18} className="text-primary"/> Kamera orqali skanerlash</h3>
+              <button onClick={() => setIsCameraOpen(false)} className="text-txt-muted hover:text-danger bg-bg-base hover:bg-danger/10 p-2 rounded-full transition-colors"><X size={20} /></button>
+            </div>
+            <div className="relative bg-black flex justify-center items-center h-[500px]">
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+                videoConstraints={{ facingMode: "environment" }}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 pointer-events-none border-[60px] border-black/40"></div>
+              <div className="absolute inset-0 pointer-events-none border-2 border-primary/50 m-[60px] border-dashed rounded-xl"></div>
+              <div className="absolute bottom-6 left-0 right-0 text-center text-white/70 text-sm font-medium drop-shadow-md">Mahsulotni ramka ichiga joylashtiring</div>
+            </div>
+            <div className="p-6 flex justify-center bg-bg-surface border-t border-bg-border">
+              <button onClick={handleCapture} className="w-16 h-16 rounded-full bg-primary flex items-center justify-center border-4 border-primary/30 hover:scale-110 active:scale-95 transition-transform shadow-[0_0_20px_rgba(99,102,241,0.4)]">
+                <Camera size={26} className="text-white" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

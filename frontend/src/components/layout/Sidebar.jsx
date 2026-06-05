@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, ScanLine, Shield, History, LogOut } from 'lucide-react'
+import { LayoutDashboard, ScanLine, Shield, History, LogOut, CreditCard } from 'lucide-react'
 import useAuthStore from '../../store/authStore'
 import { useTranslation } from 'react-i18next'
 import clsx from 'clsx'
@@ -7,6 +7,7 @@ import clsx from 'clsx'
 const NAV_ITEMS = [
   { to: '/app',         icon: LayoutDashboard, key: 'dashboard', label: 'Dashboard',     badge: 'Live', badgeType: 'primary' },
   { to: '/app/scanner',  icon: ScanLine,        key: 'scanner',   label: 'AI Scanner' },
+  { to: '/app/pricing',  icon: CreditCard,      key: 'pricing',   label: 'Tariflar' },
 ]
 
 const NAV_MANAGE = [
@@ -29,10 +30,10 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-5 border-b border-bg-border">
         <div className="w-10 h-10 flex-shrink-0">
-          <img src="/logo.png" alt="BrandGuard Logo" className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(99,102,241,0.4)] rounded-md" />
+          <img src="/logo.svg" alt="Verix Logo" className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(99,102,241,0.4)] rounded-md" />
         </div>
         <div className="flex flex-col leading-none">
-          <span className="text-[15px] font-bold text-txt-primary tracking-tight">BrandGuard</span>
+          <span className="text-[15px] font-bold text-txt-primary tracking-tight">Verix</span>
           <span className="text-[11px] font-bold gradient-text tracking-[2px]">AI</span>
         </div>
       </div>
@@ -40,7 +41,9 @@ export default function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-6">
         <NavGroup label={t('sidebar.main', 'MAIN')} items={NAV_ITEMS} />
-        <NavGroup label={t('sidebar.management', 'MANAGEMENT')} items={NAV_MANAGE} />
+        {user?.role !== 'user' && (
+          <NavGroup label={t('sidebar.management', 'MANAGEMENT')} items={NAV_MANAGE} />
+        )}
       </nav>
 
       {/* User + Logout */}

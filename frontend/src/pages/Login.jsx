@@ -54,7 +54,7 @@ export default function Login() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-txt-primary">Welcome back</h1>
-          <p className="text-txt-muted text-sm mt-1">Sign in to BrandGuard AI</p>
+          <p className="text-txt-muted text-sm mt-1">Sign in to Verix</p>
         </div>
 
         <div className="card p-8 shadow-card">

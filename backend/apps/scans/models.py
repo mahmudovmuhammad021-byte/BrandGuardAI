@@ -16,6 +16,7 @@ class Scan(models.Model):
     brand      = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True,
                                    related_name='scans')
     image      = models.ImageField(upload_to='scans/%Y/%m/')
+    
     verdict    = models.CharField(max_length=20, choices=VERDICT_CHOICES)
     confidence = models.FloatField()           # 0.0 – 100.0
     engine     = models.CharField(max_length=20, choices=ENGINE_CHOICES, default='simulation')

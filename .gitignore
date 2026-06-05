@@ -9,3 +9,11 @@ build/
 .next/
 .idea/
 .vscode/
+
+# Security and Database
+*.sqlite3
+db.sqlite3
+media/
+backend/.env
+frontend/.env
+*.pt

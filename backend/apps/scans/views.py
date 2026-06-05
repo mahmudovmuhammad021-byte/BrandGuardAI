@@ -52,8 +52,11 @@ class ScanViewSet(viewsets.ModelViewSet):
 
         # Run AI engine
         try:
-            brand_category = scan.brand.category if scan.brand else 'other'
-            result = analyze_image(scan.image.path, brand_category)
+            brand_id = scan.brand_id if scan.brand else None
+            result = analyze_image(
+                image_path=scan.image.path,
+                brand_id=brand_id
+            )
         except Exception as e:
             scan.delete()
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

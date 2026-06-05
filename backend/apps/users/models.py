@@ -22,13 +22,13 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = [
         ('admin', 'Admin'),
-        ('analyst', 'Analyst'),
-        ('viewer', 'Viewer'),
+        ('user', 'Oddiy Foydalanuvchi'),
+        ('entrepreneur', 'Tadbirkor'),
     ]
 
     email      = models.EmailField(unique=True)
     full_name  = models.CharField(max_length=150, blank=True)
-    role       = models.CharField(max_length=20, choices=ROLE_CHOICES, default='analyst')
+    role       = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
     avatar     = models.CharField(max_length=4, default='BG')  # Initials
     is_active  = models.BooleanField(default=True)
     is_staff   = models.BooleanField(default=False)

@@ -12,10 +12,10 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10">
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(99,102,241,0.4)]" />
+              <img src="/logo.svg" alt="Logo" className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(99,102,241,0.4)]" />
             </div>
             <div className="flex flex-col leading-none">
-              <span className="text-xl font-bold tracking-tight">BrandGuard</span>
+              <span className="text-xl font-bold tracking-tight">Verix</span>
               <span className="text-xs font-bold gradient-text tracking-[2px]">AI</span>
             </div>
           </div>
@@ -66,7 +66,7 @@ export default function Landing() {
       <section className="py-24 bg-bg-surface/50 border-t border-bg-border relative">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Why Choose BrandGuard AI?</h2>
+            <h2 className="text-3xl font-bold mb-4">Why Choose Verix?</h2>
             <p className="text-txt-secondary max-w-xl mx-auto">Our platform combines cutting-edge computer vision with a seamless user experience to give you absolute control over your brand's integrity.</p>
           </div>
 
@@ -92,7 +92,7 @@ export default function Landing() {
 
       {/* Footer */}
       <footer className="py-8 text-center border-t border-bg-border text-txt-muted text-sm">
-        <p>&copy; {new Date().getFullYear()} BrandGuard AI. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Verix. All rights reserved.</p>
       </footer>
     </div>
   )

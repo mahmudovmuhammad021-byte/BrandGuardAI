@@ -13,7 +13,6 @@ class ScanSerializer(serializers.ModelSerializer):
     analysis_points = ScanAnalysisPointSerializer(many=True, read_only=True)
     brand_info      = BrandListSerializer(source='brand', read_only=True)
     image_url       = serializers.SerializerMethodField()
-
     class Meta:
         model  = Scan
         fields = [

@@ -5,7 +5,7 @@ import useAuthStore from '../store/authStore'
 import toast from 'react-hot-toast'
 
 export default function Register() {
-  const [form, setForm] = useState({ fullName: '', email: '', password: '', password2: '', role: 'analyst' })
+  const [form, setForm] = useState({ fullName: '', email: '', password: '', password2: '', role: 'user' })
   const [showPwd, setShowPwd] = useState(false)
   const { register, isLoading, error } = useAuthStore()
   const navigate = useNavigate()
@@ -20,7 +20,7 @@ export default function Register() {
     }
     const result = await register(form.email, form.fullName, form.password, form.password2, form.role)
     if (result.success) {
-      toast.success('Account created! Welcome to BrandGuard AI 🚀')
+      toast.success('Account created! Welcome to Verix 🚀')
       navigate('/')
     } else {
       toast.error(result.error)
@@ -38,7 +38,7 @@ export default function Register() {
             <ShieldCheck size={28} className="text-white" />
           </div>
           <h1 className="text-2xl font-bold text-txt-primary">Create account</h1>
-          <p className="text-txt-muted text-sm mt-1">Join BrandGuard AI Platform</p>
+          <p className="text-txt-muted text-sm mt-1">Join Verix Platform</p>
         </div>
 
         <div className="card p-8 shadow-card">
@@ -75,14 +75,13 @@ export default function Register() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-txt-secondary mb-1.5">Role</label>
+              <label className="block text-xs font-semibold text-txt-secondary mb-1.5">Rolingizni tanlang</label>
               <select
                 name="role" value={form.role} onChange={handleChange}
                 className="input-field" id="reg-role"
               >
-                <option value="analyst">Analyst</option>
-                <option value="admin">Admin</option>
-                <option value="viewer">Viewer</option>
+                <option value="user">Oddiy Foydalanuvchi</option>
+                <option value="entrepreneur">Tadbirkor (O'z brendiga ega)</option>
               </select>
             </div>
 

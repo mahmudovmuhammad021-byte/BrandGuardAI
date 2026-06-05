@@ -3,12 +3,16 @@ BrandGuard AI — Django Settings
 """
 from pathlib import Path
 from datetime import timedelta
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'brandguard-ai-super-secret-key-change-in-production-2026'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'default-secret-key-for-dev')
 
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
