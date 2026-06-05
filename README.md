@@ -1,25 +1,27 @@
-# Brand Guard
+# Verix (formerly Brand Guard)
 
-Brand Guard is an intelligent web application designed to scan, detect, and verify brands using AI technology (YOLOv3). It features a robust Django backend and a modern React frontend.
+Verix is an intelligent web application designed to scan, detect, and verify original products using custom AI technology (YOLOv8). It features a robust Django backend and a modern, fully-automated React frontend.
 
 ## 🚀 Features
 
-- **AI-Powered Scanning:** Utilizes YOLOv8 models for fast and accurate brand detection in images.
-- **Brand Management:** Comprehensive dashboard to manage, track, and monitor registered brands.
-- **Alerts & Reports:** Keep track of scan history and receive alerts for unrecognized or suspicious products.
+- **AI-Powered Scanning:** Utilizes custom-trained YOLOv8 models (`best.pt`) for fast and accurate product verification.
+- **Fully Automated Verification:** Zero manual brand selection needed. The system purely relies on the AI engine to detect and verify original items vs counterfeits.
+- **Brand Management:** Comprehensive dashboard to manage, track, and monitor registered brands and scanning history.
 - **User Authentication:** Secure login, registration, and role-based access control.
+- **Secure Architecture:** Sensitive keys and database records are securely managed through environment configurations.
 
 ## 🛠️ Tech Stack
 
 ### Frontend
 - **Framework:** React (built with Vite)
-- **Styling:** Tailwind CSS
-- **State Management / API:** React hooks, custom client API
+- **Styling:** Tailwind CSS (Modern Glassmorphism UI)
+- **State Management / API:** React hooks, custom API client (Axios)
 
 ### Backend
 - **Framework:** Python, Django & Django REST Framework
-- **Database:** SQLite (default for development)
-- **AI Engine:** YOLOv8 (Computer Vision)
+- **Database:** SQLite (Default for development)
+- **AI Engine:** Ultralytics YOLOv8 (Computer Vision)
+- **Security:** python-dotenv for secret management
 
 ## ⚙️ Getting Started
 
@@ -49,6 +51,12 @@ source venv/bin/activate
 Install the required Python packages:
 ```bash
 pip install -r requirements.txt
+```
+
+Create a `.env` file in the `backend` folder with your secret keys:
+```env
+SECRET_KEY=your-super-secret-key
+DEBUG=True
 ```
 
 Run database migrations and start the server:
